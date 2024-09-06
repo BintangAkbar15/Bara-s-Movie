@@ -1,0 +1,31 @@
+body{
+    position: relative;
+    overflow-x: hidden;
+}
+
+.overview{
+    position: absolute;
+    top: 0;
+    height: 357px;
+    font-size: 14px;
+    color: white;
+    text-shadow: 0px 0px 3px black;
+    margin-left: 5px;
+    margin-top: 3px;
+    font-family: monospace;
+    display: none;
+    animation: alternate 0.5s ease;
+}
+
+.card:hover .overview{
+    white-space: pre-wrap;
+    display: block;
+}
+
+.card:hover img{
+    filter: blur(3px);
+}
+
+.fa-star{
+    color: gold;
+}
