@@ -1,10 +1,10 @@
 const insert = document.querySelector('.film-cont')
-console.log(insert)
+// console.log(insert)
 const detaildata = document.getElementById("load");
 const ids = new URLSearchParams(window.location.search).get("id");
 // console.log(detaildata)
 let page = 1
-
+if(ids){
 const auth = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkZDBiMzE4ZTk3MzY5YTQzNDIyOGY5ZjMyOTVmYWE0MCIsIm5iZiI6MTcyNTUwNjc4MS4zMDM1NzEsInN1YiI6IjY2ZDZlZjEyYWFjYzg4MTYxZmYwMWYzOCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.X_lAbN0nXK_rbM38HnmIJYhvAHIPBo3WyV_RBjzyoOw'
 
 async function detail(id=ids){
@@ -22,7 +22,7 @@ async function detail(id=ids){
      // console.log(response)
      const data = await response.json()
      // movie)
-     console.log(data)
+    //  console.log(data)
  if(data.total_results !== 0){
        const releasedate = new Date(data.release_date).toLocaleString('id-ID',{day: 'numeric', month:'long', year:'numeric'})
        let genres = []
@@ -61,64 +61,113 @@ async function detail(id=ids){
  }
 } 
 
+const wgenre = [];
 
-function pagination(paginasi = page){
-    return `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&page=${paginasi}`
+async function pagination(paginasi = page) {
+  // Tunggu hasil dari genreFilter()
+  const container = await genreFilter();
+
+  // Simpan hasil genre ke dalam array wgenre
+  wgenre.push(...container);  // Menambahkan elemen dari container ke wgenre
+
+  // Konversi genre menjadi string ID genre
+  const genreIds = container.map(genre => genre.id).join(',');
+
+  // Buat URL dengan genre IDs dan page
+  const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&with_genres=${genreIds}&page=${paginasi}`;
+  console.log(url);
+  return url;  // Kembalikan URL untuk digunakan di fungsi data
 }
 
-async function data(link = pagination()){
-    const BASEURL = `https://api.themoviedb.org/3/${link}`
-   // BASEURL)
-     const film = new Request(BASEURL,{
+async function genreFilter() {
+  const url = `https://api.themoviedb.org/3/movie/${ids}?api_key=dd0b318e97369a434228f9f3295faa40`;
+  
+  const genre = new Request(url, {
+    method: 'GET',
+    headers: {
+      accept: 'application/json',
+      Authorization: `Bearer ${auth}`
+    }
+  });
+
+  // Fetch data dan parse ke JSON
+  const response = await fetch(genre);
+  const data = await response.json();
+  
+  return data.genres; // Mengembalikan genres dari data
+}
+
+// Fungsi untuk memanggil data dari API berdasarkan link yang dibuat oleh pagination
+async function data(link = null) {
+    // Jika link tidak diberikan, jalankan pagination() untuk mendapatkan URL
+    const paginasi = link ? link : await pagination();
+    const BASEURL = `https://api.themoviedb.org/3/${paginasi}`;
+
+    const film = new Request(BASEURL, {
        method: 'GET',
        headers: {
          accept: 'application/json',
          Authorization: `Bearer ${auth}`
        }
-     })
- 
-     const response = await fetch(film)
-     // console.log(response)
-     const data = await response.json()
-     // console.log(data.total_results)
-     const movie = data.results
-     // movie)
- 
-    if(data.total_results !== 0){
-    for await (const film of movie) {
-        const releasedate = new Date(film.release_date).toLocaleString('id-ID',{day: 'numeric', month:'long', year:'numeric'})
-        const data = 
-        `
-    <div class="card mb-3 p-0 mx-3" style="max-width: 250px;" onclick="idDetail(${film.id})">
-    <div class="row g-0">
-        <div class="col-md-12">
-        <img src="https://image.tmdb.org/t/p/original${film.poster_path}" class="img-fluid rounded-start" alt="" onerror="this.src='asset/notFoundimg.png'" style="min-height: 373px">
-        </div>
-        <div class="col-md-12 d-flex justify-content-between">
-            <div class="card-body bg-dark text-light">
-            <div class="row">
-                <div class="col12" style="height:50px"><h6 class="card-title">${film.title}</h6></div>
-                <div class="col12"><p class="card-text overview">${film.overview}</p></div>
-                <div class="col12"><p class="card-text mb-1">Release : ${releasedate}</p></div>
-                <div class="col12"><p class="card-text mb-1"><i class="fa-regular fa-eye"></i>&nbsp;${Math.ceil(film.popularity)}</p></div>
-                <div class="col12"><p class="card-text mb-1 align-self-end"><i class="fa-solid fa-star"></i> &nbsp; ${(film.vote_average).toFixed(2)}</p></div>
+    });
+
+    // Fetch data dan parse ke JSON
+    const response = await fetch(film);
+    const data = await response.json();
+    const movie = data.results;
+
+    if (data.total_results !== 0) {
+        for await (const film of movie) {
+            const releasedate = new Date(film.release_date).toLocaleString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            const data = `
+            <div class="card mb-3 p-0 mx-3" style="max-width: 250px;" onclick="idDetail(${film.id})">
+                <div class="row g-0">
+                    <div class="col-md-12">
+                    <img src="https://image.tmdb.org/t/p/original${film.poster_path}" class="img-fluid rounded-start" alt="" onerror="this.src='asset/notFoundimg.png'" style="min-height: 373px">
+                    </div>
+                    <div class="col-md-12 d-flex justify-content-between">
+                        <div class="card-body bg-dark text-light">
+                        <div class="row">
+                            <div class="col12" style="height:50px"><h6 class="card-title">${film.title}</h6></div>
+                            <div class="col12"><p class="card-text overview">${film.overview}</p></div>
+                            <div class="col12"><p class="card-text mb-1">Release : ${releasedate}</p></div>
+                            <div class="col12"><p class="card-text mb-1"><i class="fa-regular fa-eye"></i>&nbsp;${Math.ceil(film.popularity)}</p></div>
+                            <div class="col12"><p class="card-text mb-1 align-self-end"><i class="fa-solid fa-star"></i> &nbsp; ${(film.vote_average).toFixed(2)}</p></div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            </div>
-        </div>
-    </div>
-    </div>
-        `
-        insert.insertAdjacentHTML('beforeend',data)
-    }
-    }
-    else{
-    insert.innerHTML = `<div class="container mb-5 w-100 d-flex justify-content-center"><h1 class="text-center">Movie Not Found</h1></div>`
+            `;
+            insert.insertAdjacentHTML('beforeend', data);
+        }
+    } else {
+        insert.innerHTML = `<div class="container mb-5 w-100 d-flex justify-content-center"><h1 class="text-center">Movie Not Found</h1></div>`;
     }
 }
+
+prev.addEventListener('click',function(){
+    page--
+    
+    insert.innerHTML=''
+    pagination(page)
+    data()
+})
+next.addEventListener('click',function(){
+    page++
+    insert.innerHTML=''
+    pagination(page)
+    data()
+  })
 
 function idDetail(id){
     window.location = `detail.html?id=${id}`
 }
 
 detail()
-data()
+data()   
+}
+else{
+    detaildata.innerHTML = `<div class="container mb-5 w-100 d-flex justify-content-center"><h1 class="text-center">Movie Not Found</h1></div>`
+    document.getElementById('container').innerHTML=''
+}

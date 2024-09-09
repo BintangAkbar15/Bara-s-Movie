@@ -43,7 +43,7 @@ function pagination(paginasi = page){
 }
 
 //link paginasi
-function loader(to_link = pagination()){
+function loader(to_link = pagination(), search = ''){
   insert.innerHTML = `
           <div class="container mb-5 w-100 d-flex justify-content-center">
               <div class="spinner-border" style="width: 30rem; height: 30rem;margin-bottom: 100px;" role="status">
@@ -53,13 +53,13 @@ function loader(to_link = pagination()){
           move.style.display = 'none'
     setTimeout(() => {
       insert.innerHTML = ''
-      data(to_link)
+      data(to_link, search)
       move.style.display = 'block'
     }, 10);
 }
 
 //  fetch data
-async function data(link = pagination()){
+async function data(link = pagination(), search = ''){
    const BASEURL = `https://api.themoviedb.org/3/${link}`
   // BASEURL)
     const film = new Request(BASEURL,{
@@ -73,9 +73,15 @@ async function data(link = pagination()){
     const response = await fetch(film)
     // console.log(response)
     const data = await response.json()
-    // console.log(data.total_results)
+    console.log(data.total_results)
     const movie = data.results
     // movie)
+
+    const info = document.querySelector(".info")
+    if(search !== ''){
+      info.innerHTML=''; 
+      info.insertAdjacentHTML("beforeend",`<div class="container mb-5 w-100 d-flex justify-content-center"><h4 class="text-center"> (${data.total_results})Hasil Pencarian untuk ${search}</h4></div>`)
+    }
 
 if(data.total_results !== 0){
   for await (const film of movie) {
@@ -146,14 +152,7 @@ prev.addEventListener('click',function(){
 })
 next.addEventListener('click',function(){
   page++
-  insert.innerHTML = `
-        <div class="container mb-5 w-100 d-flex justify-content-center">
-            <div class="spinner-border" style="width: 30rem; height: 30rem;margin-bottom: 100px;" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>`
-        move.style.display = 'none'
-    loader()
+  loader()
 })
 
 // search button
@@ -165,77 +164,24 @@ search.addEventListener('click',function(){
   }else{
     // "masuk woi")
     const url = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${cari}`
-    loader(url)
+    loader(url,cari)
   }
 })
 
 
-// function Genre(){
-//   const sortingGenre = document.getElementById("genresmenu").value
-//   if(sortingGenre === ""){
+function Genre(){
+  const sortingGenre = document.getElementById("genresmenu").value
+  if(sortingGenre === ""){
     
-//     data()
-//   }
-//   else{
-//     const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&with_genres=${sortingGenre}`
-//     // url)
-//     loader(url)
-//   }
-// }
+    data()
+  }
+  else{
+    const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&with_genres=${sortingGenre}`
+    // url)
+    loader(url)
+  }
+}
 
-// function popular(){
-//   const popular = document.getElementById("popularity").value;
-  
-//   // popular.value)
-//   if(popular === ""){
-//     data()
-//   }
-//   else{
-//     const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&sort_by=${popular}`
-//     // url)
-//     loader(url)
-//   }
-// }
-// function rilis(){
-//   const release = document.getElementById("release").value;
-  
-//   // release)
-//   if(release === ""){
-//     data()
-//   }
-//   else{
-//     const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&sort_by=${release}&primary_release_year=2025`
-//     // url)
-//     loader(url)
-//   }
-// }
-// function average(){
-//   const vavg = document.getElementById("vavg").value;
-  
-//   // vavg)
-//   if(vavg === ""){
-//     data()
-//   }
-//   else{
-//     const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&sort_by=${vavg}`
-//     // url)
-//     loader(url)
-//   }
-// }
-
-// function votecount(){
-//   const vcount = document.getElementById("vcount").value;
-  
-//   // vcount)
-//   if(vcount === ""){
-//     data()
-//   }
-//   else{
-//     const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&sort_by=${vcount}`
-//     // url)
-//     loader(url)
-//   }
-// }
 function Languages(){
   const filterlang = document.getElementById("Language").value;
   
@@ -314,7 +260,7 @@ function searching(){
     }else{
       // "masuk woi")
       const url = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${cari}`
-      loader(url)
+      loader(url,cari)
     }
   }
 }
