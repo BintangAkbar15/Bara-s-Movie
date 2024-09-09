@@ -71,37 +71,43 @@ async function data(link = pagination()){
     })
 
     const response = await fetch(film)
-    // response)
+    // console.log(response)
     const data = await response.json()
-    // data)
+    // console.log(data.total_results)
     const movie = data.results
     // movie)
 
-    for await (const film of movie) {
-        const releasedate = new Date(film.release_date).toLocaleString('id-ID',{day: 'numeric', month:'long', year:'numeric'})
-        const data = 
-        `
-<div class="card mb-3 p-0 mx-3" style="max-width: 250px;">
+if(data.total_results !== 0){
+  for await (const film of movie) {
+      const releasedate = new Date(film.release_date).toLocaleString('id-ID',{day: 'numeric', month:'long', year:'numeric'})
+      const data = 
+      `
+  <div class="card mb-3 p-0 mx-3" style="max-width: 250px;" onclick="idDetail(${film.id})">
   <div class="row g-0">
-      <div class="col-md-12">
-        <img src="https://image.tmdb.org/t/p/original${film.poster_path}" class="img-fluid rounded-start" alt="..." style="min-height: 373px">
-      </div>
-      <div class="col-md-12 d-flex justify-content-between">
-          <div class="card-body">
-            <div class="row">
-                <div class="col12" style="height:50px"><h6 class="card-title">${film.title}</h6></div>
-                <div class="col12"><p class="card-text overview">${film.overview}</p></div>
-                <div class="col12"><p class="card-text mb-1">Release : ${releasedate}</p></div>
-                <div class="col12"><p class="card-text mb-1"><i class="fa-regular fa-eye"></i>&nbsp;${Math.ceil(film.popularity)}</p></div>
-                <div class="col12"><p class="card-text mb-1 align-self-end"><i class="fa-solid fa-star"></i> &nbsp; ${(film.vote_average).toFixed(2)}</p></div>
-            </div>
+    <div class="col-md-12">
+      <img src="https://image.tmdb.org/t/p/original${film.poster_path}" class="img-fluid rounded-start" alt="" onerror="this.src='asset/notFoundimg.png'" style="min-height: 373px">
+    </div>
+    <div class="col-md-12 d-flex justify-content-between">
+        <div class="card-body">
+          <div class="row">
+              <div class="col12" style="height:50px"><h6 class="card-title">${film.title}</h6></div>
+              <div class="col12"><p class="card-text overview">${film.overview}</p></div>
+              <div class="col12"><p class="card-text mb-1">Release : ${releasedate}</p></div>
+              <div class="col12"><p class="card-text mb-1"><i class="fa-regular fa-eye"></i>&nbsp;${Math.ceil(film.popularity)}</p></div>
+              <div class="col12"><p class="card-text mb-1 align-self-end"><i class="fa-solid fa-star"></i> &nbsp; ${(film.vote_average).toFixed(2)}</p></div>
           </div>
-      </div>
+        </div>
+    </div>
   </div>
-</div>
-        `
-        insert.insertAdjacentHTML('beforeend',data)
-    }
+  </div>
+      `
+      insert.insertAdjacentHTML('beforeend',data)
+  }
+}
+else{
+  insert.innerHTML = `<div class="container mb-5 w-100 d-flex justify-content-center"><h1 class="text-center">Movie Not Found</h1></div>`
+}
+
 }
 
 // fetch bahasa
@@ -132,11 +138,6 @@ async function genre(){
     }
 }
 genre()
-
-// function next() {
-//   page++
-//   loader()
-// }
 
 // prev button
 prev.addEventListener('click',function(){
@@ -203,7 +204,7 @@ function rilis(){
     data()
   }
   else{
-    const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&sort_by=${release}`
+    const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&sort_by=${release}&primary_release_year=2025`
     // url)
     loader(url)
   }
@@ -248,14 +249,14 @@ function year(){
   }
 }
 function votecount(){
-  const year = document.getElementById("year").value;
+  const vcount = document.getElementById("vcount").value;
   
-  // year)
-  if(year === ""){
+  // vcount)
+  if(vcount === ""){
     data()
   }
   else{
-    const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&sort_by=${year}`
+    const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&sort_by=${vcount}`
     // url)
     loader(url)
   }
@@ -272,6 +273,24 @@ function Languages(){
     // url)
     loader(url)
   }
+}
+
+function searching(){
+  if(event.key === "Enter") {
+    const cari = document.getElementById("inputSearch").value
+    if(!cari){
+      insert.innerHTML=''
+      data()
+    }else{
+      // "masuk woi")
+      const url = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${cari}`
+      loader(url)
+    }
+  }
+}
+
+function idDetail(id){
+  window.location = `detail.html?id=${id}`
 }
 
 data()

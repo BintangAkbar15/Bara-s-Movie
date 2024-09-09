@@ -1,0 +1,27 @@
+body{
+    background-color: black;
+}
+
+#backdrop{
+    opacity: 0.3;
+    position: absolute;
+    top: 0;
+    z-index: -1;
+}
+
+.details-content{
+    background: linear-gradient(to top, #000000 50%, #00000000 100%);
+    /* background-color: red; */
+    width: 100vw;
+    height: 710px;
+    color: white;
+}
+
+h1{
+    color: white;
+    margin-left: 10px;
+}
+
+#details h1{
+    text-align: center;
+}

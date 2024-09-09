@@ -25,6 +25,11 @@ body{
 .card:hover img{
     filter: blur(3px);
 }
+.card:hover{
+    transition: 0.2s ease;
+    transform: scale(1.02);
+    cursor: pointer;
+}
 
 .fa-star{
     color: gold;
