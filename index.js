@@ -170,97 +170,72 @@ search.addEventListener('click',function(){
 })
 
 
-function Genre(){
-  const sortingGenre = document.getElementById("genresmenu").value
-  if(sortingGenre === ""){
+// function Genre(){
+//   const sortingGenre = document.getElementById("genresmenu").value
+//   if(sortingGenre === ""){
     
-    data()
-  }
-  else{
-    const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&with_genres=${sortingGenre}`
-    // url)
-    loader(url)
-  }
-}
+//     data()
+//   }
+//   else{
+//     const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&with_genres=${sortingGenre}`
+//     // url)
+//     loader(url)
+//   }
+// }
 
-function popular(){
-  const popular = document.getElementById("popularity").value;
+// function popular(){
+//   const popular = document.getElementById("popularity").value;
   
-  // popular.value)
-  if(popular === ""){
-    data()
-  }
-  else{
-    const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&sort_by=${popular}`
-    // url)
-    loader(url)
-  }
-}
-function rilis(){
-  const release = document.getElementById("release").value;
+//   // popular.value)
+//   if(popular === ""){
+//     data()
+//   }
+//   else{
+//     const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&sort_by=${popular}`
+//     // url)
+//     loader(url)
+//   }
+// }
+// function rilis(){
+//   const release = document.getElementById("release").value;
   
-  // release)
-  if(release === ""){
-    data()
-  }
-  else{
-    const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&sort_by=${release}&primary_release_year=2025`
-    // url)
-    loader(url)
-  }
-}
-function average(){
-  const vavg = document.getElementById("vavg").value;
+//   // release)
+//   if(release === ""){
+//     data()
+//   }
+//   else{
+//     const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&sort_by=${release}&primary_release_year=2025`
+//     // url)
+//     loader(url)
+//   }
+// }
+// function average(){
+//   const vavg = document.getElementById("vavg").value;
   
-  // vavg)
-  if(vavg === ""){
-    data()
-  }
-  else{
-    const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&sort_by=${vavg}`
-    // url)
-    loader(url)
-  }
-}
-function votecount(){
-  const vcount = document.getElementById("vcount").value;
+//   // vavg)
+//   if(vavg === ""){
+//     data()
+//   }
+//   else{
+//     const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&sort_by=${vavg}`
+//     // url)
+//     loader(url)
+//   }
+// }
+
+// function votecount(){
+//   const vcount = document.getElementById("vcount").value;
   
-  // vcount)
-  if(vcount === ""){
-    data()
-  }
-  else{
-    const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&sort_by=${vcount}`
-    // url)
-    loader(url)
-  }
-}
-function year(){
-  const vcount = document.getElementById("vcount").value;
-  
-  // vcount)
-  if(vcount === ""){
-    data()
-  }
-  else{
-    const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&sort_by=${vcount}`
-    // url)
-    loader(url)
-  }
-}
-function votecount(){
-  const vcount = document.getElementById("vcount").value;
-  
-  // vcount)
-  if(vcount === ""){
-    data()
-  }
-  else{
-    const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&sort_by=${vcount}`
-    // url)
-    loader(url)
-  }
-}
+//   // vcount)
+//   if(vcount === ""){
+//     data()
+//   }
+//   else{
+//     const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&sort_by=${vcount}`
+//     // url)
+//     loader(url)
+//   }
+// }
 function Languages(){
   const filterlang = document.getElementById("Language").value;
   
@@ -274,6 +249,61 @@ function Languages(){
     loader(url)
   }
 }
+
+let sortby = []; // Global array untuk menyimpan urutan sorting
+
+// Fungsi untuk meng-update urutan sorting
+function updateSortOrder(key, value) {
+  // Hapus item lama dari array jika sudah ada
+  sortby = sortby.filter(item => item.key !== key);
+  
+  // Jika ada nilai, tambahkan ke urutan sortby
+  if (value) {
+    sortby.push({ key, value });
+  }
+
+  // Susun kembali array sortby berdasarkan urutan perubahan
+  console.log("Sort order updated:", sortby);
+}
+
+// Fungsi sorting
+function sorting() {
+  // Ambil nilai dari elemen input
+  const vco = document.getElementById("vcount").value;
+  const vav = document.getElementById("vavg").value;
+  const rel = document.getElementById("release").value;
+  const pop = document.getElementById("popularity").value;
+
+  // Gabungkan array sortby menjadi string berdasarkan nilai
+  const sortbyStr = sortby.map(item => item.value).join(',');
+
+  // Buat URL dengan sortby yang diurutkan berdasarkan perubahan
+  const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&sort_by=${sortbyStr}`;
+  
+  console.log("Generated URL:", url);
+  loader(url);
+}
+
+// Tambahkan event listener untuk setiap input agar terdeteksi saat ada perubahan
+document.getElementById("vcount").addEventListener("change", function() {
+  updateSortOrder('vco', this.value);
+  sorting();
+});
+
+document.getElementById("vavg").addEventListener("change", function() {
+  updateSortOrder('vav', this.value);
+  sorting();
+});
+
+document.getElementById("release").addEventListener("change", function() {
+  updateSortOrder('rel', this.value);
+  sorting();
+});
+
+document.getElementById("popularity").addEventListener("change", function() {
+  updateSortOrder('pop', this.value);
+  sorting();
+});
 
 function searching(){
   if(event.key === "Enter") {

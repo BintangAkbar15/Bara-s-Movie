@@ -71,38 +71,38 @@
             <select
                   class="nav-item dropdown border-0 p-1 pt-0"
                   id="popularity"
-                  onchange="popular()"
+                  onchange="sorting()"
                   style="width: 125px;">
                   <option value="" selected-disable>Popularity</option>
-                  <option value="popularity.asc">Lowest - Highest</option>
-                  <option value="popularity.desc">Highest - Lowest</option>
+                  <option value="&sort_by=popularity.asc">Lowest - Highest</option>
+                  <option value="&sort_by=popularity.desc">Highest - Lowest</option>
             </select>
             <select
                   class="nav-item dropdown border-0 p-1 pt-0"
                   id="release"
-                  onchange="rilis()"
+                  onchange="sorting()"
                   style="width: 125px;">
                   <option value="" selected-disable>Release</option>
-                  <option value="release_date.asc">Oldest to Newest</option>
-                  <option value="release_date.desc">Newest to Oldest</option>
+                  <option value="&sort_by=release_date.asc">Oldest to Newest</option>
+                  <option value="&sort_by=release_date.desc">Newest to Oldest</option>
             </select>
             <select
                   class="nav-item dropdown border-0 p-1 pt-0"
                   id="vavg"
-                  onchange="average()"
+                  onchange="sorting()"
                   style="width: 125px;">
                   <option value="" selected-disable>Vote Average</option>
-                  <option value="vote_average.asc">Lowest - Highest</option>
-                  <option value="vote_average.desc">Highest - Lowest</option>
+                  <option value="&sort_by=vote_average.asc">Lowest - Highest</option>
+                  <option value="&sort_by=vote_average.desc">Highest - Lowest</option>
             </select>
             <select
                   class="nav-item dropdown border-0 p-1 pt-0"
                   id="vcount"
-                  onchange="votecount()"
+                  onchange="sorting()"
                   style="width: 125px;">
                   <option value="" selected-disable>Vote Count</option>
-                  <option value="vote_count.asc">Lowest - Highest</option>
-                  <option value="vote_count.desc">Highest - Lowest</option>
+                  <option value="&sort_by=vote_count.asc">Lowest - Highest</option>
+                  <option value="&sort_by=vote_count.desc">Highest - Lowest</option>
             </select>
           </div>
         </div>

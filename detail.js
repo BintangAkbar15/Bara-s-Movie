@@ -25,11 +25,14 @@ async function detail(id=ids){
      console.log(data)
  if(data.total_results !== 0){
        const releasedate = new Date(data.release_date).toLocaleString('id-ID',{day: 'numeric', month:'long', year:'numeric'})
-    //    console.log()
+       let genres = []
+       data.genres.forEach(genre => {
+            genres.push(genre.name)
+       });
        const film = 
        `
     <img class="img-fluid" id="backdrop" src="https://image.tmdb.org/t/p/original/${data.backdrop_path}" alt="">
-        <div class="container-fluid details-content mt-5 p-5" id="detail">
+        <div class="container-fluid details-content mt-5 p-5" id="detail" style="height: max-content">
           <div class="row d-md-flex d-grid justify-content-center justify-content-lg-between">
             <div class="col-12 col-md-5 col-lg-4">
               <img class="img-fluid" src="https://image.tmdb.org/t/p/original/${data.poster_path}" onerror="this.src='asset/notFoundimg.png'" alt="">
@@ -41,8 +44,10 @@ async function detail(id=ids){
               <p>${data.overview}</p>
               <div class="row mt-5">
                 <p>Release Date : ${releasedate}</p>
-                <p>Popularity : ${data.popularity}</p>
+                <p>Popularity : ${(data.popularity).toFixed(2)}</p>
                 <p>Rating : ${(data.vote_average).toFixed(2)}</p>
+                <p>Voters : ${data.vote_count}</p>
+                <p>Genre : ${genres}</p>
               </div>
             </div>
           </div>
