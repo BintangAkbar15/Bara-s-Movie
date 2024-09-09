@@ -44,6 +44,17 @@ function pagination(paginasi = page){
 
 //link paginasi
 function loader(to_link = pagination(), search = ''){
+  const searchparam = new URLSearchParams (window.location.search).get("search");
+  const genreparam = new URLSearchParams (window.location.search).get("genre");
+  if(searchparam !== ''){
+    to_link = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${searchparam}&page=${page}`
+    if(genreparam !== ''){
+      to_link = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${searchparam}&with_genres=${genreparam}&page=${page}`
+    }
+  }
+  if(genreparam !== ''){
+    to_link = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&with_genres=${genreparam}&page=${page}`
+  }
   insert.innerHTML = `
           <div class="container mb-5 w-100 d-flex justify-content-center">
               <div class="spinner-border" style="width: 30rem; height: 30rem;margin-bottom: 100px;" role="status">
@@ -53,15 +64,17 @@ function loader(to_link = pagination(), search = ''){
           move.style.display = 'none'
     setTimeout(() => {
       insert.innerHTML = ''
+      
       data(to_link, search)
       move.style.display = 'block'
     }, 10);
+    
 }
 
 //  fetch data
 async function data(link = pagination(), search = ''){
    const BASEURL = `https://api.themoviedb.org/3/${link}`
-  // BASEURL)
+  console.log(BASEURL)
     const film = new Request(BASEURL,{
       method: 'GET',
       headers: {
@@ -73,7 +86,7 @@ async function data(link = pagination(), search = ''){
     const response = await fetch(film)
     // console.log(response)
     const data = await response.json()
-    console.log(data.total_results)
+    // console.log(data.total_results)
     const movie = data.results
     // movie)
 
@@ -156,29 +169,49 @@ next.addEventListener('click',function(){
 })
 
 // search button
-search.addEventListener('click',function(){
-  const cari = document.getElementById("inputSearch").value
-  if(!cari){
-    insert.innerHTML=''
-    data()
-  }else{
-    // "masuk woi")
-    const url = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${cari}`
-    loader(url,cari)
-  }
-})
-
-
-function Genre(){
-  const sortingGenre = document.getElementById("genresmenu").value
-  if(sortingGenre === ""){
+search.addEventListener('click', function() {
+  const cari = document.getElementById("inputSearch").value;
+  if (!cari) {
+    insert.innerHTML = '';
+    data();
+  } else {
+    // "masuk woi"
+    const url = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${cari}`;
     
-    data()
+    // Membuat link dan mengatur parameter pencarian
+    let link = new URL(window.location.href);
+    let params = new URLSearchParams(link.searchParams);
+    params.set('search', cari);
+
+    // Update URL di address bar tanpa reload halaman
+    window.history.pushState({}, '', `${link.pathname}?${params.toString()}`);
+    
+    console.log(window.location.href); // Memastikan URL telah berubah
+
+    // Jalankan fungsi loader
+    loader(url, cari);
   }
-  else{
-    const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&with_genres=${sortingGenre}`
-    // url)
-    loader(url)
+});
+
+
+function Genre() {
+  const sortingGenre = document.getElementById("genresmenu").value;
+  let link = new URL(window.location.href);
+  let params = new URLSearchParams(link.searchParams);
+
+  if (sortingGenre === "") {
+    params.delete('genre');
+    window.history.pushState({}, '', `${link.pathname}?${params.toString()}`);
+    
+    data();
+  } else {
+    params.set('genre', sortingGenre);
+    
+    window.history.pushState({}, '', `${link.pathname}?${params.toString()}`);
+    
+    const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&with_genres=${sortingGenre}`;
+    console.log(window.location.href);
+    loader(url);
   }
 }
 
@@ -254,13 +287,25 @@ document.getElementById("popularity").addEventListener("change", function() {
 function searching(){
   if(event.key === "Enter") {
     const cari = document.getElementById("inputSearch").value
-    if(!cari){
-      insert.innerHTML=''
-      data()
-    }else{
-      // "masuk woi")
-      const url = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${cari}`
-      loader(url,cari)
+    if (!cari) {
+      insert.innerHTML = '';
+      data();
+    } else {
+      // "masuk woi"
+      const url = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${cari}`;
+      
+      // Membuat link dan mengatur parameter pencarian
+      let link = new URL(window.location.href);
+      let params = new URLSearchParams(link.searchParams);
+      params.set('search', cari);
+
+      // Update URL di address bar tanpa reload halaman
+      window.history.pushState({}, '', `${link.pathname}?${params.toString()}`);
+      
+      console.log(window.location.href); // Memastikan URL telah berubah
+
+      // Jalankan fungsi loader
+      loader(url);
     }
   }
 }
