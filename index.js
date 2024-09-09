@@ -49,28 +49,11 @@ function loader(to_link = pagination(), search = ''){
   
   if(searchparam !== ''){
     to_link = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${searchparam}&page=${page}`
-    if(genreparam !== ''){
-      to_link = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${searchparam}&with_genres=${genreparam}&page=${page}`
-    }
   }
-  else{
-    insert.innerHTML = `
-          <div class="container mb-5 w-100 d-flex justify-content-center">
-              <div class="spinner-border" style="width: 30rem; height: 30rem;margin-bottom: 100px;" role="status">
-                  <span class="visually-hidden">Loading...</span>
-              </div>
-          </div>`
-          move.style.display = 'none'
-    setTimeout(() => {
-      insert.innerHTML = ''
-      
-      data(to_link, search)
-      move.style.display = 'block'
-    }, 10);
-  }
-  if(genreparam !== ''){
+  
+  else if(genreparam !== ''){
     to_link = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&with_genres=${genreparam}&page=${page}`
-  } else{
+  }
     insert.innerHTML = `
           <div class="container mb-5 w-100 d-flex justify-content-center">
               <div class="spinner-border" style="width: 30rem; height: 30rem;margin-bottom: 100px;" role="status">
@@ -84,7 +67,6 @@ function loader(to_link = pagination(), search = ''){
       data(to_link, search)
       move.style.display = 'block'
     }, 10);
-  }
 }
 
 //  fetch data
@@ -330,8 +312,5 @@ function idDetail(id){
   window.location = `detail.html?id=${id}`
 }
 
-window.addEventListener("DOMContentLoaded", function() {
-  loader()
-})
 data()
 // data())
