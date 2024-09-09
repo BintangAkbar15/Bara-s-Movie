@@ -164,6 +164,56 @@ function idDetail(id){
     window.location = `detail.html?id=${id}`
 }
 
+search.addEventListener('click', function() {
+  const cari = document.getElementById("inputSearch").value;
+  if (!cari) {
+    insert.innerHTML = '';
+    data();
+  } else {
+    // "masuk woi"
+    const url = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${cari}`;
+    
+    // Membuat link dan mengatur parameter pencarian
+    let link = new URL(window.location.href);
+    let params = new URLSearchParams(link.searchParams);
+    params.set('search', cari);
+
+    // Update URL di address bar tanpa reload halaman
+    window.history.pushState({}, '', `${link.pathname}?${params.toString()}`);
+    
+    console.log(window.location.href); // Memastikan URL telah berubah
+
+    // Jalankan fungsi loader
+    loader(url, cari);
+  }
+});
+
+function searching(){
+  if(event.key === "Enter") {
+    const cari = document.getElementById("inputSearch").value
+    if (!cari) {
+      insert.innerHTML = '';
+      data();
+    } else {
+      // "masuk woi"
+      const url = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${cari}`;
+      
+      // Membuat link dan mengatur parameter pencarian
+      let link = new URL(window.location.href);
+      let params = new URLSearchParams(link.searchParams);
+      params.set('search', cari);
+      params.delete('id')
+
+      // Update URL di address bar tanpa reload halaman
+      window.history.pushState({}, '', `${link.pathname}?${params.toString()}`);
+      
+      console.log(window.location.href); // Memastikan URL telah berubah
+      window.location.href = `index.html?${params.toString()}`;
+      // Jalankan fungsi loader
+    }
+  }
+}
+
 detail()
 data()   
 }
@@ -171,3 +221,4 @@ else{
     detaildata.innerHTML = `<div class="container mb-5 w-100 d-flex justify-content-center"><h1 class="text-center">Movie Not Found</h1></div>`
     document.getElementById('container').innerHTML=''
 }
+
