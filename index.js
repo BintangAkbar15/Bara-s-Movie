@@ -42,6 +42,7 @@ function pagination(paginasi = page){
   return `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&page=${paginasi}`
 }
 
+//link paginasi
 function loader(to_link = pagination()){
   insert.innerHTML = `
           <div class="container mb-5 w-100 d-flex justify-content-center">
@@ -57,6 +58,7 @@ function loader(to_link = pagination()){
     }, 10);
 }
 
+//  fetch data
 async function data(link = pagination()){
    const BASEURL = `https://api.themoviedb.org/3/${link}`
   // BASEURL)
@@ -102,6 +104,7 @@ async function data(link = pagination()){
     }
 }
 
+// fetch bahasa
 async function lang(){
   const response = await fetch(langu)
   const data = await response.json()
@@ -115,6 +118,8 @@ async function lang(){
 }
 lang()
 
+
+// fetch genre
 async function genre(){
   const response = await fetch(genres)
   const data = await response.json()
@@ -128,6 +133,12 @@ async function genre(){
 }
 genre()
 
+// function next() {
+//   page++
+//   loader()
+// }
+
+// prev button
 prev.addEventListener('click',function(){
   page--
   loader()
@@ -144,6 +155,7 @@ next.addEventListener('click',function(){
     loader()
 })
 
+// search button
 search.addEventListener('click',function(){
   const cari = document.getElementById("inputSearch").value
   if(!cari){
@@ -155,6 +167,7 @@ search.addEventListener('click',function(){
     loader(url)
   }
 })
+
 
 function Genre(){
   const sortingGenre = document.getElementById("genresmenu").value
