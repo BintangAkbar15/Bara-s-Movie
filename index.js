@@ -8,6 +8,8 @@ const search = document.getElementById("search")
 const gmenu = document.getElementById("genresmenu")
 const language = document.getElementById("Language")
 
+
+
 const genreurl = 'https://api.themoviedb.org/3/genre/movie/list?api_key=dd0b318e97369a434228f9f3295faa40'
 
 const languages = 'https://api.themoviedb.org/3/configuration/languages'
@@ -30,14 +32,6 @@ const langu = new Request(languages ,{
   }
 });
 
-function onload(pages){
-  if(pages <= 1){
-    prev.style.display = 'none'
-  }
-  else{
-    prev.style.display = 'block'
-  }
-}
 function pagination(paginasi = page){
   return `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&page=${paginasi}`
 }
@@ -125,6 +119,10 @@ async function data(link = pagination(), search = ''){
     const totalPages = data.total_pages
     // console.log(totalPages)
     const visiblePages = 10
+
+    page <=1? prev.style.display = 'none' : prev.style.display = 'block'
+    page >=totalPages? next.style.display = 'none' : next.style.display = 'block'
+
 
     // console.log(Math.min(totalPages, visiblePages))
     
@@ -408,18 +406,11 @@ input.addEventListener('input', e => {
   clearTimeout(timeoutId)
   
   timeoutId = setTimeout(() => {
-    const title = e.target.value
     if (!input.value) {
       insert.innerHTML = '';
       data();
     } else {
-      // "masuk woi"
-      
-      //params.delete('lang')
-      //params.delete('genre')
-      // const url = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${title}`;
-      
-      // Membuat link dan mengatur parameter pencarian
+
       let link = new URL(window.location.href);
       let params = new URLSearchParams(link.searchParams);
       params.set('search', input.value);
@@ -445,22 +436,13 @@ function searching(){
       insert.innerHTML = '';
       data();
     } else {
-      // "masuk woi"
-      
-      // window.history.pushState({}, '', `index.html`);
-    //params.delete('lang')
-    //params.delete('genre')
-      // const url = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${cari}`;
-      
-      // Membuat link dan mengatur parameter pencarian
       let link = new URL(window.location.href);
       let params = new URLSearchParams(link.searchParams);
       params.set('search', cari);
-
+      params.delete('genre')
+      params.delete('lang')
       // Update URL di address bar tanpa reload halaman
       window.history.pushState({}, '', `${link.pathname}?${params.toString()}`);
-      
-      //console.log(window.location.href); // Memastikan URL telah berubah
 
       // Jalankan fungsi loader
       loader();
