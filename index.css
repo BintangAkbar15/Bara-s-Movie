@@ -15,6 +15,9 @@ body{
     font-family: monospace;
     display: none;
     animation: alternate 0.5s ease;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scroll-behavior: smooth;
 }
 
 .card:hover .overview{

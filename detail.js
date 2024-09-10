@@ -116,6 +116,70 @@ async function data(link = null) {
     const data = await response.json();
     const movie = data.results;
 
+    const totalPages = data.total_pages
+    console.log(totalPages)
+    const visiblePages = 10
+
+    // console.log(Math.min(totalPages, visiblePages))
+    
+    function updatePagination() {
+      const numpages = document.getElementById("numberpages");
+      numpages.innerHTML = '';
+    
+      let startPage, endPage;
+      
+      if (totalPages <= visiblePages) {
+        startPage = 1;
+        endPage = totalPages;
+      } else {
+        if (page <= Math.floor(visiblePages / 2)) {
+          startPage = 1;
+          endPage = visiblePages;
+        }
+        else if (page + Math.floor(visiblePages / 2) >= totalPages) {
+          startPage = totalPages - visiblePages + 1;
+          endPage = totalPages;
+        }
+        else {
+          startPage = page - Math.floor(visiblePages / 2);
+          endPage = page + Math.floor(visiblePages / 2);
+          console.log(startPage,endPage,"masuk sini")
+        }
+      }
+    
+      // Add pages to the pagination
+      for (let i = startPage; i <= endPage; i++) {
+        numpages.innerHTML += `<span class="page-item"><button class="page-link" style="background:black;" onclick="page=${i}; loader();">${i}</button></span>`;
+      }
+    
+      // const pagesMin = (page-100 <= 1) ? page =1 : page-=100
+      // const pagesPlus = (page+100 >= 500) ? page = 500 : page+=100
+      // Add dots if there are more pages before or after the displayed range
+      if (startPage > 1) {
+        numpages.innerHTML = `<span class="page-item"><button class="page-link" style="background:black;" onclick="page=${1}; loader();" >1</button></span>` + 
+                             `<span class="page-item"><button class="page-link" style="background:black;" onclick="page=${1}; loader();">...</button></span>` + 
+                             numpages.innerHTML;
+      }
+    
+      if (endPage < totalPages) {
+        numpages.innerHTML += `<span class="page-item"><button class="page-link" style="background:black;" onclick="page=${1}; loader();" >...</button></span>` + 
+                              `<span class="page-item"><button class="page-link" style="background:black;" onclick="page=${totalPages}; loader();">${totalPages}</button></span>`;
+      }
+    
+      // Set active class
+      const pageItems = numpages.getElementsByClassName('page-item');
+      for (let i = 0; i < pageItems.length; i++) {
+        const pageNumber = parseInt(pageItems[i].innerText, 10);
+        if (pageNumber === page) {
+          pageItems[i].classList.add('active');
+        } else {
+          pageItems[i].classList.remove('active');
+        }
+      }
+    }
+    
+    updatePagination();
+
     if (data.total_results !== 0) {
         for await (const film of movie) {
             const releasedate = new Date(film.release_date).toLocaleString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -144,6 +208,24 @@ async function data(link = null) {
     } else {
         insert.innerHTML = `<div class="container mb-5 w-100 d-flex justify-content-center"><h1 class="text-center">Movie Not Found</h1></div>`;
     }
+}
+
+
+function loader(to_link) {
+  //console.log(to_link)
+  insert.innerHTML = `
+        <div class="container mb-5 w-100 d-flex justify-content-center">
+            <div class="spinner-border" style="width: 30rem; height: 30rem;margin-bottom: 100px;" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>`
+        move.style.display = 'none'
+  setTimeout(() => {
+    insert.innerHTML = ''
+    
+    data(to_link, search)
+    move.style.display = 'block'
+  }, 1000);
 }
 
 prev.addEventListener('click',function(){
@@ -184,7 +266,7 @@ search.addEventListener('click', function() {
     console.log(window.location.href); // Memastikan URL telah berubah
 
     // Jalankan fungsi loader
-    loader(url, cari);
+    loader(url);
   }
 });
 

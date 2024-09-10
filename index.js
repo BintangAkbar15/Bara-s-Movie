@@ -46,27 +46,49 @@ function pagination(paginasi = page){
 function loader(to_link = pagination(), search = ''){
   const searchparam = new URLSearchParams (window.location.search).get("search");
   const genreparam = new URLSearchParams (window.location.search).get("genre");
-  const params = new URLSearchParams (window.location.search);
+  const langparam = new URLSearchParams (window.location.search).get("lang");
   const sorting = window.localStorage.getItem('sort')
 
   search = searchparam
+
   if(searchparam !== null){
-    params.delete('genre')
-    to_link = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${searchparam}&page=${page}`
+    if(sorting !== false){
+      window.pushState
+      to_link = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${searchparam}&${sortby.map(item => item.value).join('')}&page=${page}`    }
+    else{
+      to_link = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${searchparam}&page=${page}`
+    }
   }
-  
   else if(genreparam !== null){
-    to_link = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&with_genres=${genreparam}&page=${page}`
+    search=''
+    if(sorting!== false){
+      if(langparam !== null){
+        to_link = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&with_genres=${genreparam}&${sortby.map(item => item.value).join('')}&with_original_language=${langparam}&page=${page}`
+      }else{
+        to_link = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&with_genres=${genreparam}&${sortby.map(item => item.value).join('')}&page=${page}`
+      }
+    }else{
+      to_link = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&with_genres=${genreparam}&page=${page}`
+    }
+  }
+  else if(langparam !== null){
+    search=''
+    if(sorting !== false){
+      to_link = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&with_original_language=${langparam}&${sortby.map(item => item.value).join('')}&page=${page}`
+    }
+    else{
+      to_link = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&with_original_language=${langparam}&page=${page}`
+    }
   }
   else if(sorting !== false){
+    search=''
     to_link = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40${sortby.map(item => item.value).join('')}&page=${page}`
   }
-
   else{
     to_link = to_link
   }
 
-  //console.log(to_link)
+  console.log(to_link)
   insert.innerHTML = `
         <div class="container mb-5 w-100 d-flex justify-content-center">
             <div class="spinner-border" style="width: 30rem; height: 30rem;margin-bottom: 100px;" role="status">
@@ -85,7 +107,7 @@ function loader(to_link = pagination(), search = ''){
 //  fetch data
 async function data(link = pagination(), search = ''){
    const BASEURL = `https://api.themoviedb.org/3/${link}`
-  console.log(BASEURL)
+  // console.log(BASEURL)
     const film = new Request(BASEURL,{
       method: 'GET',
       headers: {
@@ -101,6 +123,7 @@ async function data(link = pagination(), search = ''){
     const movie = data.results
     // movie)
     const totalPages = data.total_pages
+    // console.log(totalPages)
     const visiblePages = 10
 
     // console.log(Math.min(totalPages, visiblePages))
@@ -135,16 +158,18 @@ async function data(link = pagination(), search = ''){
         numpages.innerHTML += `<span class="page-item"><button class="page-link" onclick="page=${i}; loader();">${i}</button></span>`;
       }
     
+      // const pagesMin = (page-100 <= 1) ? page =1 : page-=100
+      // const pagesPlus = (page+100 >= 500) ? page = 500 : page+=100
       // Add dots if there are more pages before or after the displayed range
       if (startPage > 1) {
-        numpages.innerHTML = `<span class="page-item"><button class="page-link" >1</button></span>` + 
-                             `<span class="page-item"><button class="page-link" >...</button></span>` + 
+        numpages.innerHTML = `<span class="page-item"><button class="page-link" onclick="page=${1}; loader();" >1</button></span>` + 
+                             `<span class="page-item"><button class="page-link" onclick="page=${1}; loader();">...</button></span>` + 
                              numpages.innerHTML;
       }
     
       if (endPage < totalPages) {
-        numpages.innerHTML += `<span class="page-item"><button class="page-link" >...</button></span>` + 
-                              `<span class="page-item"><button class="page-link" >${totalPages}</button></span>`;
+        numpages.innerHTML += `<span class="page-item"><button class="page-link" onclick="page=${1}; loader();" >...</button></span>` + 
+                              `<span class="page-item"><button class="page-link" onclick="page=${totalPages}; loader();">${totalPages}</button></span>`;
       }
     
       // Set active class
@@ -159,12 +184,10 @@ async function data(link = pagination(), search = ''){
       }
     }
     
-    console.log(pagination())
-    // Initialize pagination
     updatePagination();
 
     const info = document.querySelector(".info")
-    if(search !== null){
+    if(search !== '' && search !== null){
       info.innerHTML=''; 
       info.insertAdjacentHTML("beforeend",`<div class="container mb-5 w-100 d-flex justify-content-center"><h4 class="text-center"> (${data.total_results})Hasil Pencarian untuk ${search}</h4></div>`)
     }
@@ -243,6 +266,7 @@ next.addEventListener('click',function(){
 
 // search button
 search.addEventListener('click', function() {
+
   const cari = document.getElementById("inputSearch").value;
   page=1
   if (!cari) {
@@ -255,6 +279,8 @@ search.addEventListener('click', function() {
     // Membuat link dan mengatur parameter pencarian
     let link = new URL(window.location.href);
     let params = new URLSearchParams(link.searchParams);
+    params.delete('genre')
+    params.delete('lang')
     params.set('search', cari);
 
     // Update URL di address bar tanpa reload halaman
@@ -272,35 +298,43 @@ function Genre() {
   const sortingGenre = document.getElementById("genresmenu").value;
   let link = new URL(window.location.href);
   let params = new URLSearchParams(link.searchParams);
+  params.delete('search')
   page=1
   if (sortingGenre !== "") {
-    params.delete('genre');
     window.history.pushState({}, '', `${link.pathname}?${params.toString()}`);
-    
-    data();
-  } else {
     params.set('genre', sortingGenre);
     
     window.history.pushState({}, '', `${link.pathname}?${params.toString()}`);
     
-    const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&with_genres=${sortingGenre}`;
-    //console.log(window.location.href);
-    loader(url);
+    // const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&with_genres=${sortingGenre}`;
+    loader();
+    
+  } else {
+    data();
   }
 }
 
 function Languages(){
   const filterlang = document.getElementById("Language").value;
-  
+  let link = new URL(window.location.href);
+  let params = new URLSearchParams(link.searchParams);
   // filterlang)
+  
+  params.delete('search')
   page=1
   if(language.value === ""){
     data()
   }
   else{
-    const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&with_original_language=${filterlang}`
-    // url)
-    loader(url)
+    //params.delete('genre');
+    //params.delete('saerch');
+    // const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40&with_original_language=${filterlang}`
+    window.history.pushState({}, '', `${link.pathname}?${params.toString()}`);
+    params.set('lang', filterlang);
+    
+    window.history.pushState({}, '', `${link.pathname}?${params.toString()}`);
+    
+    loader();
   }
 }
 
@@ -380,12 +414,17 @@ input.addEventListener('input', e => {
       data();
     } else {
       // "masuk woi"
-      const url = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${title}`;
+      
+      //params.delete('lang')
+      //params.delete('genre')
+      // const url = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${title}`;
       
       // Membuat link dan mengatur parameter pencarian
       let link = new URL(window.location.href);
       let params = new URLSearchParams(link.searchParams);
       params.set('search', input.value);
+      params.delete('genre')
+      params.delete('lang')
       page=1
       // Update URL di address bar tanpa reload halaman
       window.history.pushState({}, '', `${link.pathname}?${params.toString()}`);
@@ -393,7 +432,7 @@ input.addEventListener('input', e => {
       //console.log(window.location.href); // Memastikan URL telah berubah
 
       // Jalankan fungsi loader
-      loader(url);
+      loader();
     }
   }, 500)
   
@@ -407,7 +446,11 @@ function searching(){
       data();
     } else {
       // "masuk woi"
-      const url = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${cari}`;
+      
+      // window.history.pushState({}, '', `index.html`);
+    //params.delete('lang')
+    //params.delete('genre')
+      // const url = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${cari}`;
       
       // Membuat link dan mengatur parameter pencarian
       let link = new URL(window.location.href);
@@ -420,7 +463,7 @@ function searching(){
       //console.log(window.location.href); // Memastikan URL telah berubah
 
       // Jalankan fungsi loader
-      loader(url);
+      loader();
     }
   }
 }
