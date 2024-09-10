@@ -49,6 +49,7 @@ function loader(to_link = pagination(), search = ''){
   const params = new URLSearchParams (window.location.search);
   const sorting = window.localStorage.getItem('sort')
 
+  search = searchparam
   if(searchparam !== null){
     params.delete('genre')
     to_link = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${searchparam}&page=${page}`
@@ -99,9 +100,71 @@ async function data(link = pagination(), search = ''){
     // //console.log(data.total_results)
     const movie = data.results
     // movie)
+    const totalPages = data.total_pages
+    const visiblePages = 10
+
+    // console.log(Math.min(totalPages, visiblePages))
+    
+    function updatePagination() {
+      const numpages = document.getElementById("numberpages");
+      numpages.innerHTML = '';
+    
+      let startPage, endPage;
+      
+      if (totalPages <= visiblePages) {
+        startPage = 1;
+        endPage = totalPages;
+      } else {
+        if (page <= Math.floor(visiblePages / 2)) {
+          startPage = 1;
+          endPage = visiblePages;
+        }
+        else if (page + Math.floor(visiblePages / 2) >= totalPages) {
+          startPage = totalPages - visiblePages + 1;
+          endPage = totalPages;
+        }
+        else {
+          startPage = page - Math.floor(visiblePages / 2);
+          endPage = page + Math.floor(visiblePages / 2);
+          console.log(startPage,endPage,"masuk sini")
+        }
+      }
+    
+      // Add pages to the pagination
+      for (let i = startPage; i <= endPage; i++) {
+        numpages.innerHTML += `<span class="page-item"><button class="page-link" onclick="page=${i}; loader();">${i}</button></span>`;
+      }
+    
+      // Add dots if there are more pages before or after the displayed range
+      if (startPage > 1) {
+        numpages.innerHTML = `<span class="page-item"><button class="page-link" >1</button></span>` + 
+                             `<span class="page-item"><button class="page-link" >...</button></span>` + 
+                             numpages.innerHTML;
+      }
+    
+      if (endPage < totalPages) {
+        numpages.innerHTML += `<span class="page-item"><button class="page-link" >...</button></span>` + 
+                              `<span class="page-item"><button class="page-link" >${totalPages}</button></span>`;
+      }
+    
+      // Set active class
+      const pageItems = numpages.getElementsByClassName('page-item');
+      for (let i = 0; i < pageItems.length; i++) {
+        const pageNumber = parseInt(pageItems[i].innerText, 10);
+        if (pageNumber === page) {
+          pageItems[i].classList.add('active');
+        } else {
+          pageItems[i].classList.remove('active');
+        }
+      }
+    }
+    
+    console.log(pagination())
+    // Initialize pagination
+    updatePagination();
 
     const info = document.querySelector(".info")
-    if(search !== ''){
+    if(search !== null){
       info.innerHTML=''; 
       info.insertAdjacentHTML("beforeend",`<div class="container mb-5 w-100 d-flex justify-content-center"><h4 class="text-center"> (${data.total_results})Hasil Pencarian untuk ${search}</h4></div>`)
     }
@@ -181,6 +244,7 @@ next.addEventListener('click',function(){
 // search button
 search.addEventListener('click', function() {
   const cari = document.getElementById("inputSearch").value;
+  page=1
   if (!cari) {
     insert.innerHTML = '';
     data();
@@ -208,8 +272,8 @@ function Genre() {
   const sortingGenre = document.getElementById("genresmenu").value;
   let link = new URL(window.location.href);
   let params = new URLSearchParams(link.searchParams);
-
-  if (sortingGenre === "") {
+  page=1
+  if (sortingGenre !== "") {
     params.delete('genre');
     window.history.pushState({}, '', `${link.pathname}?${params.toString()}`);
     
@@ -229,6 +293,7 @@ function Languages(){
   const filterlang = document.getElementById("Language").value;
   
   // filterlang)
+  page=1
   if(language.value === ""){
     data()
   }
@@ -267,6 +332,7 @@ function sorting() {
   }else{
     window.localStorage.setItem('sort', false);
   }
+  page=1
   setTimeout(() => {
     const url = `discover/movie?api_key=dd0b318e97369a434228f9f3295faa40${sortby.map(item => item.value).join('')}`;
     // console.log(url)
@@ -320,7 +386,7 @@ input.addEventListener('input', e => {
       let link = new URL(window.location.href);
       let params = new URLSearchParams(link.searchParams);
       params.set('search', input.value);
-
+      page=1
       // Update URL di address bar tanpa reload halaman
       window.history.pushState({}, '', `${link.pathname}?${params.toString()}`);
       
@@ -362,6 +428,5 @@ function searching(){
 function idDetail(id){
   window.location = `detail.html?id=${id}`
 }
-
 loader()
 // data())
