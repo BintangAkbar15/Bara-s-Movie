@@ -197,7 +197,7 @@ if(data.total_results !== 0){
       const releasedate = new Date(film.release_date).toLocaleString('id-ID',{day: 'numeric', month:'long', year:'numeric'})
       const data = 
       `
-  <div class="card mb-3 p-0 mx-3" style="max-width: 250px;" onclick="idDetail(${film.id})">
+  <div class="card mb-3 p-0 mx-3" style="max-width: 230px;" onclick="idDetail(${film.id})">
   <div class="row g-0">
     <div class="col-md-12">
       <img src="https://image.tmdb.org/t/p/original${film.poster_path}" class="img-fluid rounded-start" alt="" onerror="this.src='asset/notFoundimg.png'" style="min-height: 373px">
@@ -205,11 +205,11 @@ if(data.total_results !== 0){
     <div class="col-md-12 d-flex justify-content-between">
         <div class="card-body">
           <div class="row">
-              <div class="col12" style="height:50px"><h6 class="card-title">${film.title}</h6></div>
-              <div class="col12"><p class="card-text overview">${film.overview}</p></div>
-              <div class="col12"><p class="card-text mb-1">Release : ${releasedate}</p></div>
-              <div class="col12"><p class="card-text mb-1"><i class="fa-regular fa-eye"></i>&nbsp;${Math.ceil(film.popularity)}</p></div>
-              <div class="col12"><p class="card-text mb-1 align-self-end"><i class="fa-solid fa-star"></i> &nbsp; ${(film.vote_average).toFixed(2)}</p></div>
+              <div class="col12 p-0" style="height:50px"><h6 class="card-title text-center">${film.title}</h6></div>
+              <div class="col12 p-0"><p class="card-text overview">${film.overview}</p></div>
+              <div class="col12 p-0"><p class="card-text mb-1">Release : ${releasedate}</p></div>
+              <div class="col12 p-0"><p class="card-text mb-1"><i class="fa-regular fa-eye"></i>&nbsp;${Math.ceil(film.popularity)}</p></div>
+              <div class="col12 p-0"><p class="card-text mb-1 align-self-end"><i class="fa-solid fa-star"></i> &nbsp; ${(film.vote_average).toFixed(2)}</p></div>
           </div>
         </div>
     </div>

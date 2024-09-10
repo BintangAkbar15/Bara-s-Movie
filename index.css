@@ -37,3 +37,36 @@ body{
 .fa-star{
     color: gold;
 }
+
+@media screen and (max-width: 750px) {
+    .card{
+        max-width: 130px !important;
+        max-height: 410px;
+        img{
+            min-height: 150px!important;
+        }
+        h6{
+            font-size: 15px !important;
+            width: 120px;
+        }
+        p{
+            font-size: 10px !important;
+        }
+    }
+    .overview{
+        position: absolute;
+        top: 0;
+        height: 190px;
+        font-size: 14px;
+        color: white;
+        text-shadow: 0px 0px 3px black;
+        margin-left: 5px;
+        margin-top: 3px;
+        font-family: monospace;
+        display: none;
+        animation: alternate 0.5s ease;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scroll-behavior: smooth;
+    }
+}
