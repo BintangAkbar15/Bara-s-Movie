@@ -282,9 +282,19 @@ document.getElementById("popularity").addEventListener("change", function() {
   sorting();
 });
 
+function debounce(func, delay) {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      func.apply(null, args);
+    }, delay);
+  };
+}
+
 function searching(){
-  if(event.key === "Enter") {
-    const cari = document.getElementById("inputSearch").value
+   if(event.key === "Enter") {
+    
     if (!cari) {
       insert.innerHTML = '';
       data();
@@ -307,6 +317,36 @@ function searching(){
     }
   }
 }
+
+const dbSearchFunc = function(){
+  const cari = document.getElementById("inputSearch").value
+  if (!cari) {
+    insert.innerHTML = '';
+    data();
+  } else {
+    // "masuk woi"
+    const url = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${cari}`;
+    
+    // Membuat link dan mengatur parameter pencarian
+    let link = new URL(window.location.href);
+    let params = new URLSearchParams(link.searchParams);
+    params.set('search', cari);
+
+    // Update URL di address bar tanpa reload halaman
+    window.history.pushState({}, '', `${link.pathname}?${params.toString()}`);
+    
+    console.log(window.location.href); // Memastikan URL telah berubah
+
+    // Jalankan fungsi loader
+    loader(url);
+  }
+}
+
+// Membuat versi debounce dari fungsi pencarian
+const debouncedSearch = debounce(dbSearchFunc,500);
+
+// Memasukkan event listener pada input dengan fungsi debounce
+document.getElementById("inputSearch").addEventListener('keydown', debouncedSearch);
 
 function idDetail(id){
   window.location = `detail.html?id=${id}`
