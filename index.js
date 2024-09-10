@@ -47,9 +47,8 @@ function loader(to_link = pagination(), search = ''){
 
   if(searchparam !== null){
     if(sorting !== false){
-      window.pushState
-      to_link = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${searchparam}&${sortby.map(item => item.value).join('')}&page=${page}`    }
-    else{
+      to_link = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${searchparam}&${sortby.map(item => item.value).join('')}&page=${page}`    
+    }else{
       to_link = `search/movie?api_key=dd0b318e97369a434228f9f3295faa40&query=${searchparam}&page=${page}`
     }
   }
